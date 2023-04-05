@@ -1,15 +1,19 @@
-# Simple code challenge #
+# Simple code challenge improvement details #
 
-This code is an example from a real world scenario that has been modified to protect the source. The code is one file from a large PHP application.
+Below are changes I deemed as improvements to the FinalResult.php file provided from the original repository, with explanations as to why they were done.
 
-The context of the file is a parser of a result file from a specific Singapore bank regarding bank transfers. There were multiple banks from multiple countries involved in this application.
+|   Original   |   Improvement  |   Explanation |
+|     :---:    |     :---:      |     :---     |
+| `$f`    | `$file`     | clearer variable name      |
+| `fopen()`   | `file()`     | Instead of keeping the file open to look at the file line by line, get the content all at once   |
+| `fgetcsv`   | `str_getcsv` and `array_map()`      | since we have the data from file(),  we can get each item from each line and store it in $fileContents as an array    |
+|  `$h`      | `[$currency, $failure_code, $failure_message] = $fileContents[0];`      | instead of the variable $h containing the data and targeting the failure_code and failure_message by their indices, just assign them to clearer variables at once on one line   |
+| `$rcs`    | `$records `     | clearer variable name      |
+| `while() `   | `foreach() `     | we can utilize foreach() to loop through the entire array and stop once it reaches the end  |
+|    |    |     |
+|   `$rcs[] = $rcd;` |   removed  |  the creation of the $rcd variable is not needed as the array assigned to $rcd can be directly pushed to $rcs/$records |
+| `$rcs = array_filter($rcs);`   | removed      | filtering the array does not have any purpose as we are already checking if each line has the necessary 16 items   |
+| `"document" => $d `    | removed       | Since the test file does not expect "document" to be in the return value, it was deemed unnecessary
 
-To install the dependencies run `composer install` (this assumes you have composer installed in your environment)
 
-The code works and outputs what it required. Included is one test file with one test. This can be run and should pass with `./vendor/bin/phpunit tests`
 
-Read through the `src/FinalResult.php` as well as the test file `tests/FinalResultTest.php` and see what improvements can be made (if any). Please be prepared to explain any modifications that have been made (or not) and why. The only rule is to not change the current end result or output.
-
-Keep in mind this is from a larger application that handles multiple files, multiple banks, mutiple countries, and multiple currencies.
-
-Do the best you can to demonstrate your skillset.
