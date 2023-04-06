@@ -2,6 +2,13 @@
 
 class FinalResult {
     const EXPECTED_RECORD_LENGTH = 16;
+    const AMOUNT_INDEX = 8;
+    const BANK_ACCOUNT_NAME_INDEX = 7;
+    const BANK_ACCOUNT_NUMBER_INDEX = 6;
+    const BANK_BRANCH_CODE_INDEX = 2;
+    const BANK_CODE_INDEX = 0;
+    const END_TO_END_ID_1_INDEX = 10;
+    const END_TO_END_ID_2_INDEX = 11;
 
     function results($file) {
         $document = fopen($file, "r");
@@ -9,20 +16,20 @@ class FinalResult {
         $records = [];
         while(($record = fgetcsv($document)) !== false) {
 			if (count($record) == self::EXPECTED_RECORD_LENGTH) {
-                $amt = !$record[8] || $record[8] === "0" ? 0 : (float) $record[8];
-                $ban = !$record[6] ? "Bank account number missing" : (int) $record[6];
-                $bac = !$record[2] ? "Bank branch code missing" : $record[2];
-                $e2e = !$record[10] && !$record[11] ? "End to end id missing" : $record[10] . $record[11];
+                $amount = !$record[self::AMOUNT_INDEX] || $record[self::AMOUNT_INDEX] === "0" ? 0 : (float) $record[self::AMOUNT_INDEX];
+                $bank_account_number = !$record[self::BANK_ACCOUNT_NUMBER_INDEX] ? "Bank account number missing" : (int) $record[self::BANK_ACCOUNT_NUMBER_INDEX];
+                $bank_branch_code = !$record[self::BANK_BRANCH_CODE_INDEX] ? "Bank branch code missing" : $record[self::BANK_BRANCH_CODE_INDEX];
+                $end_to_end_id = !$record[self::END_TO_END_ID_1_INDEX] && !$record[self::END_TO_END_ID_2_INDEX] ? "End to end id missing" : $record[self::END_TO_END_ID_1_INDEX] . $record[self::END_TO_END_ID_2_INDEX];
                 $records[] = [
                     "amount" => [
                         "currency" => $currency,
-                        "subunits" => (int) ($amt * 100)
+                        "subunits" => (int) ($amount * 100)
                     ],
-                    "bank_account_name" => str_replace(" ", "_", strtolower($record[7])),
-                    "bank_account_number" => $ban,
-                    "bank_branch_code" => $bac,
-                    "bank_code" => $record[0],
-                    "end_to_end_id" => $e2e,
+                    "bank_account_name" => str_replace(" ", "_", strtolower($record[self::BANK_ACCOUNT_NAME_INDEX])),
+                    "bank_account_number" => $bank_account_number,
+                    "bank_branch_code" => $bank_branch_code,
+                    "bank_code" => $record[self::BANK_CODE_INDEX],
+                    "end_to_end_id" => $end_to_end_id,
                 ];
 			}
         }
