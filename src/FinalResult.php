@@ -1,12 +1,14 @@
 <?php
 
 class FinalResult {
+    const EXPECTED_RECORD_LENGTH = 16;
+
     function results($file) {
-		$fileContents = array_map("str_getcsv", file($file));
-        [$currency, $failure_code, $failure_message] = $fileContents[0];
+        $document = fopen($file, "r");
+        [$currency, $failure_code, $failure_message] = fgetcsv($document);
         $records = [];
-        foreach ($fileContents as $record):
-			if (count($record) == 16) {
+        while(($record = fgetcsv($document)) !== false) {
+			if (count($record) == self::EXPECTED_RECORD_LENGTH) {
                 $amt = !$record[8] || $record[8] === "0" ? 0 : (float) $record[8];
                 $ban = !$record[6] ? "Bank account number missing" : (int) $record[6];
                 $bac = !$record[2] ? "Bank branch code missing" : $record[2];
@@ -23,7 +25,8 @@ class FinalResult {
                     "end_to_end_id" => $e2e,
                 ];
 			}
-		endforeach;
+        }
+        fclose($document);
         return [
             "filename" => basename($file),
             "failure_code" => $failure_code,
